@@ -1,0 +1,31 @@
+{% extends 'common/base.html' %}
+{% block title %}家族ID作成{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">家族ID作成</h2>
+      <form method="post" novalidate>  {# ← HTML5バリデーションを無効化！ #}
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.name == "line_notify_id" %}
+              <div class="form-text text-muted">
+                ※公式LINEを含むLINEグループのgroup_id
+              </div>
+            {% endif %}
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100">作成する</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

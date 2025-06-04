@@ -1,0 +1,47 @@
+{% extends 'common/base.html' %}
+
+{% block title %}育児管理TOP{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <h2 class="mb-4 text-center">育児管理</h2>
+
+      {% for record in records %}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ record.child.name }}</h5>
+            <p class="card-text">生年月日：{{ record.child.birth_date }}</p>
+
+            <hr class="my-3">
+
+            <p class="fw-bold mb-1">🍼 直前のミルク記録</p>
+            <p>{{ record.last_milk.action_at|default:"記録なし" }}</p>
+            <div class="d-grid gap-2">
+              <a href="{% url 'milk_register' record.child.pk %}" class="btn btn-outline-primary w-100">ミルク登録</a>
+              <a href="{% url 'milk_list' record.child.pk %}" class="btn btn-outline-secondary w-100">ミルク一覧</a>
+            </div>
+
+            <p class="fw-bold mt-3 mb-1">💩 排泄記録</p>
+            <ul class="mb-3">
+              <li>今日：おしっこ {{ record.today_stats.pee }} 回、うんち {{ record.today_stats.poo }} 回</li>
+              <li>昨日：おしっこ {{ record.yesterday_stats.pee }} 回、うんち {{ record.yesterday_stats.poo }} 回</li>
+            </ul>
+
+            <div class="d-grid gap-2">
+              <a href="{% url 'excretion_register' record.child.pk %}" class="btn btn-outline-primary w-100">排泄登録</a>
+              <a href="{% url 'excretion_list' record.child.pk %}" class="btn btn-outline-secondary w-100">排泄一覧</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-center text-muted">子ども情報が登録されていません。</p>
+      {% endfor %}
+      <div class="d-grid gap-2">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary w-100">ダッシュボードに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

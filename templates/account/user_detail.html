@@ -1,0 +1,28 @@
+{% extends 'common/base.html' %}
+{% block title %}ユーザー情報{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">ユーザー情報</h2>
+
+      <dl class="row">
+        <dt class="col-5">ユーザー名</dt>
+        <dd class="col-7">{{ user_obj.username }}</dd>
+
+        <dt class="col-5">メールアドレス</dt>
+        <dd class="col-7 text-break">{{ user_obj.email }}</dd>
+      </dl>
+
+      <div class="d-grid gap-2 mb-3">
+        <a href="{% url 'user_pass_change' %}" class="btn btn-outline-primary w-100">ユーザーPASS変更へ</a>
+      </div>
+
+      <div class="d-grid gap-2">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary w-100">ダッシュボードに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

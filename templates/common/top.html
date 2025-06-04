@@ -1,0 +1,31 @@
+{% extends "common/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">はじめに</h2>
+
+  <div class="row g-4">
+    <div class="col-12">
+      <a href="{% url 'user_register' %}" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-3">
+          <div class="card-body">
+            <h5 class="card-title mb-2">新規登録</h5>
+            <p class="card-text">初めてご利用の方はこちらからアカウントを作成してください。</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-12">
+      <a href="{% url 'login' %}" class="text-decoration-none text-dark">
+        <div class="card shadow-sm p-3">
+          <div class="card-body">
+            <h5 class="card-title mb-2">ログイン</h5>
+            <p class="card-text">すでにアカウントをお持ちの方はこちらからログインしてください。</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

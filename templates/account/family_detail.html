@@ -1,0 +1,65 @@
+{% extends 'common/base.html' %}
+{% block title %}家族情報{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">家族情報</h2>
+
+      <dl class="row">
+        <dt class="col-5">家族ID</dt>
+        <dd class="col-7">{{ family.family_authentication_id }}</dd>
+
+        <dt class="col-5">パスワード</dt>
+        <dd class="col-7">＊＊＊＊</dd>
+
+        <dt class="col-5">LINE Group Id</dt>
+        <dd class="col-7" style="word-break: break-all;">
+          {% if family.line_notify_id %}
+            {{ family.line_notify_id }}
+          {% else %}
+            未設定
+          {% endif %}
+        </dd>
+      </dl>
+      <div class="d-grid gap-2 mt-4 mb-3">
+        <a href="{% url 'family_pass_change' %}" class="btn btn-outline-primary w-100">家族PASS変更へ</a>
+        <a href="{% url 'family_line_token_change' %}" class="btn btn-outline-secondary w-100">LINE Group Id変更へ</a>
+      </div>
+
+      <hr class="my-4">
+
+      <h5 class="text-center mb-3">子ども情報</h5>
+      {% if active_children %}
+        {% for child in active_children %}
+          <div class="border rounded p-3 mb-3 bg-light">
+            <p class="mb-1"><strong>名前：</strong>{{ child.name }}</p>
+            <p class="mb-1"><strong>生年月日：</strong>{{ child.birth_date }}</p>
+            <p class="mb-2"><strong>性別：</strong>
+              {% if child.sex %}
+                {{ child.sex.name }}
+              {% else %}
+                未設定
+              {% endif %}
+            </p>
+            <div class="d-grid">
+              <a href="{% url 'child_update' pk=child.pk %}" class="btn btn-sm btn-outline-primary">編集</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center text-muted">子ども　登録されていません</p>
+      {% endif %}
+
+      <div class="d-grid gap-2 mt-4 mb-3">
+        <a href="{% url 'child_create' %}" class="btn btn-outline-success w-100">子ども追加</a>
+      </div>
+
+      <div class="d-grid">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary w-100">ダッシュボードに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

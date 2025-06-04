@@ -1,0 +1,101 @@
+{% extends 'common/base.html' %}
+
+{% block title %}ミルク記録詳細{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">{{ record.child.name }}のミルク記録詳細</h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.child }}  {# Hidden input #}
+
+        {# ←★ ここに追加！ non_field_errors 表示ブロック #}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <label for="{{ form.action_at.id_for_label }}" class="form-label">実施日時</label>
+          {{ form.action_at }}
+          {% if form.action_at.errors %}
+            <div class="text-danger small">{{ form.action_at.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.milk_type.id_for_label }}" class="form-label">ミルクの種類</label>
+          {{ form.milk_type }}
+          {% if form.milk_type.errors %}
+            <div class="text-danger small">{{ form.milk_type.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.amount.id_for_label }}" class="form-label">量</label>
+          {{ form.amount }}
+          {% if form.amount.errors %}
+            <div class="text-danger small">{{ form.amount.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.left_breast_minutes.id_for_label }}" class="form-label">左の授乳時間</label>
+          {{ form.left_breast_minutes }}
+          {% if form.left_breast_minutes.errors %}
+            <div class="text-danger small">{{ form.left_breast_minutes.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.right_breast_minutes.id_for_label }}" class="form-label">右の授乳時間</label>
+          {{ form.right_breast_minutes }}
+          {% if form.right_breast_minutes.errors %}
+            <div class="text-danger small">{{ form.right_breast_minutes.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button type="submit" class="btn btn-primary w-100">変更を保存</button>
+          <button type="submit" name="delete" class="btn btn-outline-danger w-100">この記録を削除</button>
+        </div>
+      </form>
+
+      <div class="d-grid gap-2 mt-3">
+        <a href="{% url 'ikujikanri_top' %}" class="btn btn-outline-secondary w-100">育児管理TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const milkType = document.querySelector('[name="milk_type"]');
+    const amountDiv = document.querySelector('[name="amount"]').closest('.mb-3');
+    const leftDiv = document.querySelector('[name="left_breast_minutes"]').closest('.mb-3');
+    const rightDiv = document.querySelector('[name="right_breast_minutes"]').closest('.mb-3');
+
+    function toggleInputs() {
+      const selected = milkType.options[milkType.selectedIndex].text;
+      if (selected === '母乳') {
+        amountDiv.style.display = 'none';
+        leftDiv.style.display = '';
+        rightDiv.style.display = '';
+      } else {
+        amountDiv.style.display = '';
+        leftDiv.style.display = 'none';
+        rightDiv.style.display = 'none';
+      }
+    }
+
+    milkType.addEventListener('change', toggleInputs);
+    toggleInputs();
+  });
+</script>
+{% endblock %}

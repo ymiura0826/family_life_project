@@ -1,0 +1,100 @@
+{% extends 'common/base.html' %}
+
+{% block title %}ミルク記録追加{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">{{ child.name }}のミルク記録追加</h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+          <label for="{{ form.action_at.id_for_label }}" class="form-label">実施日時</label>
+          {{ form.action_at }}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.milk_type.id_for_label }}" class="form-label">ミルクの種類</label>
+            {{ form.milk_type }}
+            {% if form.milk_type.errors %}
+              <div class="text-danger small">{{ form.milk_type.errors.as_text|cut:"* " }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.amount.id_for_label }}" class="form-label">ミルクの量</label>
+          {{ form.amount }}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.left_breast_minutes.id_for_label }}" class="form-label">左授乳時間</label>
+          {{ form.left_breast_minutes }}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.right_breast_minutes.id_for_label }}" class="form-label">右授乳時間</label>
+          {{ form.right_breast_minutes }}
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          {{ form.notify_flag }}
+          <label class="form-check-label ms-2" for="{{ form.notify_flag.id_for_label }}">
+            次回ミルク通知を設定する
+          </label>
+        </div>
+
+        <div class="mb-3" id="nextMilkDiv" style="display: none;">
+          <label for="{{ form.next_milk_at.id_for_label }}" class="form-label">次回ミルク予定日時</label>
+          {{ form.next_milk_at }}
+        </div>
+
+        <div class="d-grid gap-2 mb-3">
+          <button type="submit" class="btn btn-primary w-100">記録を保存</button>
+        </div>
+
+        <div class="d-grid">
+          <a href="{% url 'ikujikanri_top' %}" class="btn btn-outline-secondary w-100">育児管理TOPに戻る</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const notifyCheckbox = document.querySelector('#id_notify_flag');
+    const nextMilkDiv = document.querySelector('#nextMilkDiv');
+    const milkType = document.querySelector('[name="milk_type"]');
+    const amountDiv = document.querySelector('[name="amount"]').closest('.mb-3');
+    const leftDiv = document.querySelector('[name="left_breast_minutes"]').closest('.mb-3');
+    const rightDiv = document.querySelector('[name="right_breast_minutes"]').closest('.mb-3');
+
+    function toggleInputs() {
+      const selected = milkType.options[milkType.selectedIndex].text;
+      if (selected === '母乳') {
+        amountDiv.style.display = 'none';
+        leftDiv.style.display = '';
+        rightDiv.style.display = '';
+      } else {
+        amountDiv.style.display = '';
+        leftDiv.style.display = 'none';
+        rightDiv.style.display = 'none';
+      }
+    }
+
+    function toggleNextMilk() {
+      nextMilkDiv.style.display = notifyCheckbox.checked ? '' : 'none';
+    }
+
+    milkType.addEventListener('change', toggleInputs);
+    notifyCheckbox.addEventListener('change', toggleNextMilk);
+
+    toggleInputs();
+    toggleNextMilk();
+  });
+</script>
+{% endblock %}

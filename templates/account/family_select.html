@@ -1,0 +1,16 @@
+{% extends 'common/base.html' %}
+{% block title %}家族IDの選択{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 text-center">
+      <h2 class="mb-4">家族IDの選択</h2>
+      <p>以下のいずれかを選んでください</p>
+      <div class="d-grid gap-3">
+        <a href="{% url 'family_register' %}" class="btn btn-primary btn-lg">家族IDを新規作成する</a>
+        <a href="{% url 'family_authentication' %}" class="btn btn-outline-primary btn-lg">家族IDで認証する</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

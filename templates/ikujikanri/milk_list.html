@@ -1,0 +1,40 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ child.name }}のミルク記録{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">{{ child.name }}のミルク記録（直近1週間）</h2>
+
+      {% if records %}
+        {% for r in records %}
+          <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted">日時：{{ r.action_at|date:"Y-m-d H:i" }}</h6>
+              <p class="mb-1">種類：{{ r.milk_type.name }}</p>
+              {% if r.milk_type.name == "母乳" %}
+                <p class="mb-1">左授乳時間：{{ r.left_breast_minutes }} 分</p>
+                <p class="mb-2">右授乳時間：{{ r.right_breast_minutes }} 分</p>
+              {% else %}
+                <p class="mb-2">量：{{ r.amount }} ml</p>
+              {% endif %}
+
+              <div class="d-grid">
+                <a href="{% url 'milk_detail' r.id %}" class="btn btn-outline-primary btn-sm w-100">詳細を見る</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center">記録がありません。</p>
+      {% endif %}
+
+      <div class="d-grid mt-3">
+        <a href="{% url 'ikujikanri_top' %}" class="btn btn-outline-secondary w-100">育児管理TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

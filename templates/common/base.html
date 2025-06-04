@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}family life{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 必要があればここに追加CSSを記載 -->
+    {% block extra_head %}{% endblock %}
+    <style>
+        .logo-img {
+            height: 3rem;
+            max-height: 80px;
+            width: auto;
+        }
+
+    @media (min-width: 768px) {
+        .logo-img {
+        height: 2.5rem;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .logo-img {
+        height: 3rem;
+        }
+    }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="{% static 'images/logo.png' %}" alt="family life logo" class="logo-img me-2">
+            </a>
+            <!-- <a class="navbar-brand" href="/">family life</a> -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto">
+                    {% if user.is_authenticated %}
+                        <span class="me-3 d-block d-lg-inline">ようこそ、{{ user.username }} さん</span>
+                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'logout' %}">ログアウト</a>
+                    {% else %}
+                        <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'login' %}">ログイン</a>
+                        <a class="btn btn-primary btn-sm" href="{% url 'user_register' %}">新規登録</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bootstrap JavaScript（必要であれば） -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

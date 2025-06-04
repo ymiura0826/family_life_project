@@ -1,0 +1,51 @@
+{% extends 'common/base.html' %}
+
+{% block title %}排泄記録詳細{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h2 class="mb-4 text-center">{{ record.child.name }}の排泄記録詳細</h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.child }} {# Hidden input #}
+
+        <div class="mb-3">
+          <label for="{{ form.action_at.id_for_label }}" class="form-label">実施日時</label>
+          {{ form.action_at }}
+          {% if form.action_at.errors %}
+            <div class="text-danger small">{{ form.action_at.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.excretion_type.id_for_label }}" class="form-label">排泄の種類</label>
+          {{ form.excretion_type }}
+          {% if form.excretion_type.errors %}
+            <div class="text-danger small">{{ form.excretion_type.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.memo.id_for_label }}" class="form-label">メモ</label>
+          {{ form.memo }}
+          {% if form.memo.errors %}
+            <div class="text-danger small">{{ form.memo.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button type="submit" class="btn btn-primary w-100">変更を保存</button>
+          <button type="submit" name="delete" class="btn btn-outline-danger w-100">この記録を削除</button>
+        </div>
+      </form>
+
+      <div class="d-grid gap-2 mt-3">
+        <a href="{% url 'ikujikanri_top' %}" class="btn btn-outline-secondary w-100">育児管理TOPに戻る</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

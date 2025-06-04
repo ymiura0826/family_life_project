@@ -1,0 +1,36 @@
+{% extends 'common/base.html' %}
+
+{% block title %}ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-end mb-3">
+    <div class="col-auto">
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="settingsMenu" data-bs-toggle="dropdown" aria-expanded="false">
+          メニュー
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsMenu">
+          <li><a class="dropdown-item" href="{% url 'user_detail' pk=user.id %}">ユーザー情報</a></li>
+          {% if user.family %}
+            <li><a class="dropdown-item" href="{% url 'family_detail' pk=user.family.family_id %}">家族情報</a></li>
+          {% endif %}
+          <li><a class="dropdown-item" href="{% url 'notification_setting' %}">通知設定</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card text-center shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title">育児管理</h5>
+          <p class="card-text">ミルク・排泄記録などの入力はこちら</p>
+          <a href="{% url 'ikujikanri_top' %}" class="btn btn-primary w-100">育児管理へ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
