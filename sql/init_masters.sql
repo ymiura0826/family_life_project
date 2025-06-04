@@ -29,4 +29,5 @@ INSERT INTO m_notify_method (id, name, order_id, created_at, updated_at)
 VALUES
   (1, 'line_notfiy', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (2, 'email', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (3, 'line_official', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
