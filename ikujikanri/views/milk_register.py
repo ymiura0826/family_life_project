@@ -40,7 +40,7 @@ class MilkRegisterView(FormView):
                 notify_type=MstNotifyType.objects.get(name='milk'),
                 notify_method=MstNotifyMethod.objects.get(name='line_official'),
                 schedule_at=notify_time,
-                notify_content=f"{self.child.name}の次回ミルクは{localtime(notify_time).strftime('%H:%M')}です"
+                notify_content=f"{self.child.name}の次回ミルクは{localtime(next_milk_at).strftime('%H:%M')}です"
             )
 
         return redirect('ikujikanri_top')  # ← URL name に合わせて修正
