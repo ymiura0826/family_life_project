@@ -76,7 +76,7 @@ class MilkRecordForm(forms.ModelForm):
 class ExcretionRecordForm(forms.Form):
     action_at = forms.DateTimeField(
         label='実施日時',
-        initial=localtime(now()).replace(second=0, microsecond=0),
+        #initial=localtime(now()).replace(second=0, microsecond=0),
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         error_messages={
             'required': 'このフィールドは必須です。',
@@ -105,6 +105,7 @@ class ExcretionRecordForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['action_at'].initial = localtime(now()).replace(second=0, microsecond=0)
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs['class'] = 'form-check-input'
