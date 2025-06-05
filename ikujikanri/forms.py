@@ -12,7 +12,7 @@ class MilkRecordForm(forms.ModelForm):
         required=False,
         label='次回ミルク予定日時',
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        initial=localtime(now()).replace(second=0, microsecond=0),
+        #initial=localtime(now()).replace(second=0, microsecond=0),
     )
 
     class Meta:
@@ -50,6 +50,7 @@ class MilkRecordForm(forms.ModelForm):
 
         self.fields['notify_flag'].widget.attrs['class'] = 'form-check-input'
         self.fields['next_milk_at'].widget.attrs['class'] = 'form-control'
+        self.fields['next_milk_at'].initial = localtime(now()).replace(second=0, microsecond=0)
 
     def clean(self):
         cleaned_data = super().clean()

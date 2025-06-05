@@ -34,6 +34,7 @@ class MilkRegisterView(FormView):
 
         if form.cleaned_data.get('notify_flag') and form.cleaned_data.get('next_milk_at'):
             notify_time = form.cleaned_data['next_milk_at'] - timedelta(minutes=30)
+            next_milk_at = form.cleaned_data['next_milk_at']
 
             NotifySchedule.objects.create(
                 family=self.request.user.family,
