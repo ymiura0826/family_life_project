@@ -23,7 +23,7 @@ class MilkRegisterViewTests(TestCase):
         self.milk_type_breast = MstMilkType.objects.create(id=1, name='母乳', order_id=1)
         self.milk_type_powder = MstMilkType.objects.create(id=2, name='粉ミルク', order_id=2)
         self.notify_type = MstNotifyType.objects.create(id=1, name='milk', order_id=1)
-        self.notify_method = MstNotifyMethod.objects.create(id=1, name='email', order_id=1)
+        self.notify_method = MstNotifyMethod.objects.create(id=1, name='line_official', order_id=1)
 
         self.family = Family.objects.create(family_authentication_id="fam001", family_password="password")
         self.user = User.objects.create_user(username="testuser", password="testpass", family=self.family)

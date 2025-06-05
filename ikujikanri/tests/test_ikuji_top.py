@@ -52,6 +52,6 @@ class IkujiTopViewTests(TestCase):
 
         response = self.client.get(self.url)
         self.assertContains(response, "赤ちゃんB")
-        self.assertContains(response, self.yesterday_dt.strftime("%B %d, %Y"))
+        self.assertContains(response, self.yesterday_dt.strftime("%B %#d, %Y"))
         self.assertContains(response, "おしっこ 1 回、うんち 0 回")  # 今日
         self.assertContains(response, "おしっこ 0 回、うんち 1 回")  # 昨日

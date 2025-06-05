@@ -28,5 +28,5 @@ urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('', top_view, name='top'),  # TOPページへのルーティングを追加
     path('login/', CustomLoginView.as_view(), name='login'),
-
+    path('notification/', include('notification.urls')),
 ]
