@@ -1,5 +1,6 @@
 from django.views import View
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import modelformset_factory
@@ -17,6 +18,13 @@ class ShoppingTemplateEditView(LoginRequiredMixin, View):
     ・一括保存ボタンでまとめて DB 更新／論理削除
     """
     template_name = 'shopping/template_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not request.user.family:
+            return redirect(reverse_lazy('family_select'))
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, family_id):
         family = request.user.family

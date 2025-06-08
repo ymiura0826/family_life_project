@@ -16,6 +16,8 @@ class ShoppingTopView(LoginRequiredMixin, View):
     success_url   = reverse_lazy('shopping_top')
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         if not request.user.family:
             return redirect(reverse_lazy('family_select'))
         return super().dispatch(request, *args, **kwargs)

@@ -20,10 +20,8 @@ class ShoppingItemUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('shopping_top')
 
     def dispatch(self, request, *args, **kwargs):
-        """
-        ・LoginRequiredMixin によって未ログインはログイン画面へリダイレクトされる
-        ・ここでは「family 未設定 → family_select 画面へリダイレクト」を追加
-        """
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         if not request.user.family:
             return redirect(reverse_lazy('family_select'))
         return super().dispatch(request, *args, **kwargs)
