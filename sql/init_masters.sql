@@ -21,7 +21,8 @@ VALUES
 -- 通知種別マスタ（m_notify_type）
 INSERT INTO m_notify_type (id, name, order_id, created_at, updated_at)
 VALUES
-  (1, 'milk', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (1, 'milk', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (2, 'add_shopping_list', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 -- 通知手段マスタ（m_notify_method）
@@ -31,3 +32,9 @@ VALUES
   (2, 'email', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (3, 'line_official', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+-- 買い物品目カテゴリマスタ（m_shopping_item_category）
+INSERT INTO m_shopping_item_category (id, name, order_id, created_at, updated_at)
+VALUES
+  (1, '食品', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (2, '日用品', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (3, 'その他', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

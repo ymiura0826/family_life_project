@@ -1,0 +1,212 @@
+{% extends 'common/base.html' %}
+{% load static tz %}
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="text-center mb-4">よく買うアイテムリスト編集</h2>
+
+  <form method="post" id="template-formset">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <!-- テンプレートカード群 -->
+    <div id="cards" class="row row-cols-1 g-3">
+      {% for form in formset.forms %}
+      <div class="col">
+        <div class="card position-relative card-form">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <button type="button" class="btn btn-sm btn-light move-up" aria-label="上へ">▲</button>
+              <button type="button" class="btn btn-sm btn-light move-down" aria-label="下へ">▼</button>
+            </div>
+            {% if form.DELETE %}
+            <div class="form-check mb-0">
+              {{ form.DELETE }}
+              <label class="form-check-label ms-1">削除予定</label>
+            </div>
+            {% endif %}
+          </div>
+          <div class="card-body">
+            {{ form.id }}
+            {{ form.order_id }}
+
+            <div class="mb-2">
+              <label class="form-label">{{ form.shopping_item_category.label }}</label>
+              {{ form.shopping_item_category }}
+              {% if form.shopping_item_category.errors %}
+              <div class="text-danger small">{{ form.shopping_item_category.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-2">
+              <label class="form-label">{{ form.item_name.label }}</label>
+              {{ form.item_name }}
+              {% if form.item_name.errors %}
+              <div class="text-danger small">{{ form.item_name.errors }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-2">
+              <label class="form-label">{{ form.memo.label }}（任意）</label>
+              {{ form.memo }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+      <button type="button" id="add-card" class="btn btn-outline-primary flex-fill">アイテムを新規追加</button>
+      <div id="notice-holder" class="flex-fill"></div>
+      <button type="submit" id="save-all" class="btn btn-primary flex-fill">変更を保存</button>
+    </div>
+
+    <!-- 編集中表示：新規追加と一括保存の間に配置 -->
+    <div class="alert alert-info edit-notice d-none mt-3 mb-3">
+      編集中：編集後は保存を押してください
+    </div>
+
+  </form>
+
+  <div class="d-grid mt-3">
+    <a href="{% url 'shopping_top' %}" id="back-top" class="btn btn-outline-secondary">買い物リストTOPに戻る</a>
+  </div>
+</div>
+
+<!-- 空カードテンプレート -->
+<template id="blank-card">
+  <div class="col">
+    <div class="card position-relative card-form">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <button type="button" class="btn btn-sm btn-light move-up" aria-label="上へ" disabled>▲</button>
+          <button type="button" class="btn btn-sm btn-light move-down" aria-label="下へ" disabled>▼</button>
+        </div>
+        <div class="form-check mb-0">
+          <input type="checkbox" name="__prefix__-DELETE" id="id_form-__prefix__-DELETE" class="form-check-input">
+          <label class="form-check-label ms-1" for="id_form-__prefix__-DELETE">削除予定</label>
+        </div>
+      </div>
+      <div class="card-body">
+        <input type="hidden" name="form-__prefix__-id" id="id_form-__prefix__-id">
+        <input type="hidden" name="form-__prefix__-order_id" id="id_form-__prefix__-order_id" value="__prefix__">
+
+        <div class="mb-2">
+          <label class="form-label" for="id_form-__prefix__-shopping_item_category">カテゴリ</label>
+          <select name="form-__prefix__-shopping_item_category" class="form-select" id="id_form-__prefix__-shopping_item_category">
+            <option value="">---------</option>
+            {% for opt in formset.empty_form.shopping_item_category.field.queryset %}
+            <option value="{{ opt.pk }}">{{ opt.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="id_form-__prefix__-item_name">アイテム名</label>
+          <input type="text" name="form-__prefix__-item_name" class="form-control" id="id_form-__prefix__-item_name">
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="id_form-__prefix__-memo">メモ（任意）</label>
+          <textarea name="form-__prefix__-memo" class="form-control" id="id_form-__prefix__-memo"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const cardsContainer = document.getElementById('cards');
+  const addBtn = document.getElementById('add-card');
+  const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+  const blankTpl = document.getElementById('blank-card').content;
+  const editNotice = document.querySelector('.edit-notice');
+  const backLink = document.getElementById('back-top');
+  const saveBtn = document.getElementById('save-all');
+
+  // フォームの現在状態取得
+  function getFormState() {
+    return Array.from(cardsContainer.querySelectorAll('.card-form')).map(card => ({
+      DELETE: card.querySelector('input[type="checkbox"][name$="-DELETE"]').checked,
+      order_id: card.querySelector('input[name$="-order_id"]').value,
+      category: card.querySelector('[name$="-shopping_item_category"]').value,
+      item_name: card.querySelector('[name$="-item_name"]').value,
+      memo: card.querySelector('[name$="-memo"]').value,
+    }));
+  }
+
+  const initialState = JSON.stringify(getFormState());
+  let isSubmitting = false;
+
+  // 編集中メッセージトグル
+  function toggleEditNotice() {
+    const current = JSON.stringify(getFormState());
+    if (current !== initialState) editNotice.classList.remove('d-none');
+    else editNotice.classList.add('d-none');
+  }
+
+  // order_id 更新
+  function updateOrder() {
+    Array.from(cardsContainer.querySelectorAll('.card-form')).forEach((card, idx) => {
+      const input = card.querySelector('input[name$="-order_id"]');
+      if (input) input.value = idx;
+    });
+  }
+
+  // 一括保存時は警告無効化
+  saveBtn.addEventListener('click', () => {
+    isSubmitting = true;
+  });
+
+  // ナビゲーション警告
+  window.addEventListener('beforeunload', e => {
+    if (!editNotice.classList.contains('d-none') && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '編集中です。保存せずに移動しますか？';
+    }
+  });
+  backLink.addEventListener('click', e => {
+    if (!editNotice.classList.contains('d-none') && !isSubmitting) {
+      if (!confirm('編集中です。保存せずに移動しますか？')) e.preventDefault();
+    }
+  });
+
+  // 操作イベント
+  cardsContainer.addEventListener('input', toggleEditNotice);
+  cardsContainer.addEventListener('change', e => {
+    if (e.target.matches('input[type="checkbox"][name$="-DELETE"]')) {
+      const card = e.target.closest('.card-form');
+      card.classList.toggle('bg-danger', e.target.checked);
+      card.classList.toggle('bg-opacity-10', e.target.checked);
+    }
+    toggleEditNotice(); updateOrder();
+  });
+  cardsContainer.addEventListener('click', e => {
+    if (e.target.matches('.move-up') || e.target.matches('.move-down')) {
+      const card = e.target.closest('.card-form');
+      if (e.target.matches('.move-up')) {
+        const prev = card.parentElement.previousElementSibling;
+        if (prev) cardsContainer.insertBefore(card.parentElement, prev);
+      }
+      if (e.target.matches('.move-down')) {
+        const next = card.parentElement.nextElementSibling;
+        if (next) cardsContainer.insertBefore(next, card.parentElement);
+      }
+      updateOrder(); toggleEditNotice();
+    }
+  });
+
+  // 新規追加
+  addBtn.addEventListener('click', () => {
+    const count = parseInt(totalForms.value, 10);
+    const clone = blankTpl.cloneNode(true);
+    clone.querySelectorAll('[name]').forEach(el => el.name = el.name.replace(/__prefix__/g, count));
+    clone.querySelectorAll('[id]').forEach(el => el.id = el.id.replace(/__prefix__/g, count));
+    cardsContainer.appendChild(clone);
+    totalForms.value = count + 1;
+    updateOrder(); toggleEditNotice();
+  });
+
+  // 初期チェック
+  toggleEditNotice();
+});
+</script>
+{% endblock %}

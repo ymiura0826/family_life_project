@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'ikujikanri.apps.IkujikanriConfig',
     'account.apps.AccountConfig',
     'notification.apps.NotificationConfig',
+    'shopping.apps.ShoppingConfig'
 ]
 
 MIDDLEWARE = [

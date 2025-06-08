@@ -1,0 +1,233 @@
+{% extends 'common/base.html' %}
+{% load static tz %}
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="mb-4 text-center">買い物リスト</h2>
+
+  <!-- ■ 未完了アイテム一覧 -->
+  <div class="row gy-3 mb-4">
+    {% for item in items %}
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body d-flex justify-content-between">
+            <div>
+              <p class="mb-1"><strong>カテゴリ：</strong>{{ item.shopping_item_category.name }}</p>
+              <p class="mb-1"><strong>アイテム名：</strong>{{ item.item_name }}</p>
+              {% if item.memo %}
+                <p class="text-muted small mb-0">({{ item.memo }})</p>
+              {% endif %}
+            </div>
+            <div class="d-flex flex-column gap-1">
+              <a href="{% url 'shopping_item_edit' item.id %}"
+                 class="btn btn-sm btn-outline-primary">編集/削除</a>
+              <form method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit"
+                        name="complete_id"
+                        value="{{ item.id }}"
+                        class="btn btn-sm btn-success">
+                  購入済みとして完了
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center text-muted">
+        登録されているアイテムはありません。
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- ■ 新規追加エリア -->
+  <div id="add-area" class="mb-4">
+    {% for form in add_forms %}
+      <div class="card mb-3 add-form">
+        <form method="post" class="card-body" novalidate>
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+          <div class="mb-2">
+            <label for="{{ form.template_choice.id_for_label }}" class="form-label">
+              よく買うアイテムリストから選択（任意）
+            </label>
+            {{ form.template_choice }}
+            {% if form.template_choice.errors %}
+              <div class="text-danger small">
+                {{ form.template_choice.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ form.shopping_item_category.label_tag }}
+            {{ form.shopping_item_category }}
+            {% if form.shopping_item_category.errors %}
+              <div class="text-danger small">
+                {{ form.shopping_item_category.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ form.item_name.label_tag }}
+            {{ form.item_name }}
+            {% if form.item_name.errors %}
+              <div class="text-danger small">
+                {{ form.item_name.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ form.memo.label_tag }}（任意）
+            {{ form.memo }}
+            {% if form.memo.errors %}
+              <div class="text-danger small">
+                {{ form.memo.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit"
+                  name="add_item"
+                  class="btn btn-sm btn-primary">
+            追加
+          </button>
+        </form>
+      </div>
+    {% endfor %}
+
+    <template id="empty-form">
+      <div class="card mb-3 add-form">
+        <form method="post" class="card-body" novalidate>
+          {% csrf_token %}
+          {{ blank_form.non_field_errors }}
+
+          <div class="mb-2">
+            <label for="{{ blank_form.template_choice.id_for_label }}" class="form-label">
+              よく買うアイテムリストから選択（任意）
+            </label>
+            {{ blank_form.template_choice }}
+            {% if blank_form.template_choice.errors %}
+              <div class="text-danger small">
+                {{ blank_form.template_choice.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ blank_form.shopping_item_category.label_tag }}
+            {{ blank_form.shopping_item_category }}
+            {% if blank_form.shopping_item_category.errors %}
+              <div class="text-danger small">
+                {{ blank_form.shopping_item_category.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ blank_form.item_name.label_tag }}
+            {{ blank_form.item_name }}
+            {% if blank_form.item_name.errors %}
+              <div class="text-danger small">
+                {{ blank_form.item_name.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-2">
+            {{ blank_form.memo.label_tag }}（任意）
+            {{ blank_form.memo }}
+            {% if blank_form.memo.errors %}
+              <div class="text-danger small">
+                {{ blank_form.memo.errors.as_text|cut:"* " }}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit"
+                  name="add_item"
+                  class="btn btn-sm btn-primary">
+            追加
+          </button>
+        </form>
+      </div>
+    </template>
+  </div>
+
+  <!-- ■ 「アイテム追加」ボタン -->
+  <button id="add-button"
+          type="button"
+          class="btn btn-outline-primary mb-4">
+    アイテム追加
+  </button>
+
+  <!-- ■ LINE通知送信／テンプレート編集／ダッシュボードへ戻る -->
+  <div class="d-grid gap-2 mt-4">
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit"
+              name="notify_manual"
+              class="btn btn-warning w-100">
+        LINE通知送信
+      </button>
+    </form>
+    <a href="{% url 'shopping_template_edit' request.user.family.family_id %}"
+       class="btn btn-sm btn-outline-primary w-100">
+      よく買うアイテムリストの編集
+    </a>
+  </div>
+  <div class="d-grid gap-2 mt-3">
+    <a href="{% url 'dashboard' %}"
+       class="btn btn-secondary w-100">
+      ダッシュボードへ戻る
+    </a>
+  </div>
+</div>
+
+<script>
+  const templatesData = {
+    {% for tpl in templates %}
+      "{{ tpl.id }}": {
+        "category": {{ tpl.shopping_item_category_id }},
+        "name": "{{ tpl.item_name|escapejs }}",
+        "memo": "{{ tpl.memo|default_if_none:""|escapejs }}"
+      }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  };
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const addBtn   = document.getElementById('add-button');
+  const addArea  = document.getElementById('add-area');
+  const tpl      = document.getElementById('empty-form').content;
+  const maxCards = 1;
+
+  if (addArea.querySelectorAll('.add-form').length >= maxCards) {
+    addBtn.style.display = 'none';
+  }
+
+  addBtn.addEventListener('click', () => {
+    if (addArea.querySelectorAll('.add-form').length >= maxCards) return;
+    const clone = tpl.cloneNode(true);
+    addArea.appendChild(clone);
+    addBtn.style.display = 'none';
+
+    const card = addArea.querySelector('.add-form:last-child');
+    const sel  = card.querySelector('select[name="template_choice"]');
+    sel.addEventListener('change', e => {
+      const id = e.target.value;
+      if (!id || !templatesData[id]) return;
+      const data = templatesData[id];
+      card.querySelector('select[name="shopping_item_category"]').value = data.category;
+      card.querySelector('input[name="item_name"]').value = data.name;
+      card.querySelector('input[name="memo"]').value = data.memo;
+    });
+  });
+});
+</script>
+{% endblock %}

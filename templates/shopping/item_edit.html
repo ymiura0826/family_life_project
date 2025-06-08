@@ -1,0 +1,60 @@
+{# templates/shopping/item_edit.html #}
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>買い物アイテム編集</h2>
+
+  <form method="post" id="item-edit-form"  novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <!-- カテゴリ選択 -->
+    <div class="mb-3">
+      <label for="id_shopping_item_category" class="form-label">{{ form.shopping_item_category.label }}</label>
+      {{ form.shopping_item_category }}
+      {% if form.shopping_item_category.errors %}
+        <div class="text-danger">{{ form.shopping_item_category.errors|striptags }}</div>
+      {% endif %}
+    </div>
+
+    <!-- 品物名 -->
+    <div class="mb-3">
+      <label for="id_item_name" class="form-label">{{ form.item_name.label }}</label>
+      {{ form.item_name }}
+      {% if form.item_name.errors %}
+        <div class="text-danger">{{ form.item_name.errors|striptags }}</div>
+      {% endif %}
+    </div>
+
+    <!-- メモ（任意） -->
+    <div class="mb-3">
+      <label for="id_memo" class="form-label">{{ form.memo.label }}</label>
+      {{ form.memo }}
+      {% if form.memo.errors %}
+        <div class="text-danger">{{ form.memo.errors|striptags }}</div>
+      {% endif %}
+    </div>
+
+    <!-- ボタン類：保存／論理削除 -->
+    <div class="d-grid gap-2 mt-4">
+      <button type="submit" class="btn btn-primary w-100">
+        変更を保存
+      </button>
+      <button type="submit" name="action" value="delete"
+              class="btn btn-outline-danger w-100"
+              onclick="return confirm('本当にこのアイテムを削除しますか？');">
+        このアイテムを削除
+      </button>
+    </div>
+  </form>
+
+  <!-- 買い物リストTOPへ戻る -->
+  <div class="d-grid gap-2 mt-3">
+    <a href="{% url 'shopping_top' %}" class="btn btn-outline-secondary w-100">
+      買い物リストTOPに戻る
+    </a>
+  </div>
+</div>
+{% endblock %}
