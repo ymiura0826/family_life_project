@@ -73,5 +73,40 @@
     <!-- Bootstrap JavaScript（必要であれば） -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_scripts %}{% endblock %}
+<!-- 二重送信防止（イベントデリゲーション）-->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', e => {
+      const btn = form.querySelector('button[type="submit"], input[type="submit"]');
+      if (!btn) return;
+
+      if (btn.disabled) {
+        e.preventDefault();
+        return;
+      }
+
+      // 初回クリック時の無効化＆文言変更
+      btn.disabled = true;
+      const originalText = (btn.tagName === 'BUTTON') ? btn.textContent : btn.value;
+      if (btn.tagName === 'BUTTON') {
+        btn.textContent = '処理中…';
+      } else {
+        btn.value = '処理中…';
+      }
+
+      // 5秒後に再度有効化し、元の文言に戻す
+      setTimeout(() => {
+        btn.disabled = false;
+        if (btn.tagName === 'BUTTON') {
+          btn.textContent = originalText;
+        } else {
+          btn.value = originalText;
+        }
+      }, 5000);  // ミリ秒単位（ここでは5000ms＝5秒）
+    });
+  });
+});
+</script>
 </body>
 </html>
