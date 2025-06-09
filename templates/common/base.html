@@ -87,23 +87,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // 初回クリック時の無効化＆文言変更
-      btn.disabled = true;
-      const originalText = (btn.tagName === 'BUTTON') ? btn.textContent : btn.value;
-      if (btn.tagName === 'BUTTON') {
-        btn.textContent = '処理中…';
-      } else {
-        btn.value = '処理中…';
-      }
-
-      // 5秒後に再度有効化し、元の文言に戻す
       setTimeout(() => {
-        btn.disabled = false;
+        btn.disabled = true;
+        const originalText = (btn.tagName === 'BUTTON') ? btn.textContent : btn.value;
         if (btn.tagName === 'BUTTON') {
-          btn.textContent = originalText;
+            btn.textContent = '処理中…';
         } else {
-          btn.value = originalText;
+            btn.value = '処理中…';
         }
+        setTimeout(() => {
+            btn.disabled = false;
+            if (btn.tagName === 'BUTTON') {
+                btn.textContent = originalText;
+            } else {
+                btn.value = originalText;
+            }
       }, 5000);  // ミリ秒単位（ここでは5000ms＝5秒）
+    }, 0);
     });
   });
 });
